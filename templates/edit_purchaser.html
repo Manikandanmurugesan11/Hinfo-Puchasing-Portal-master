@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit_purchaser</title>
+    <!-- <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js">
+        $(document).ready(function() {
+            $('#rfid').val('rows.Rfid_Id');
+            $('#name').val('rows.User_Name');
+            $('#email').val('rows.Email_id');
+            $('#address').val('rows.User_Address');
+            $('#phone').val('rows.Telephone');
+        });
+
+    </script>  -->
+
+</head>
+<body background="\static\users.png">
+    <br/><div style="text-align: right;" class=""WelcomeMessage>
+        <h3><a style="color: aliceblue;" href="{{ url_for('resetpass') }}"> Reset Password </a></h3>
+        </div>
+        <br/>
+<form style="width:450px; margin-left:40%;margin-top:3%; background-color: rgba(245, 245, 245, 0.9);" action = "{{ url_for('edit_purchaser',id=results[0])}}" method = "post">
+    <table align="center" border="0" cellpadding="10" cellspacing="20">
+        <tbody>
+            <tr align="center">
+                <td colspan="2"><h1>Edit_Purchaser</h1></td>
+            </tr>
+            <tr>
+                <td><h3>Rfid_Id</h3></td>
+                <td><input type="text" name="rfid" placeholder="Enter Rfid_Id" value="{{results[0]}}" disabled ></td>
+            </tr>
+            <tr>
+                <td><h3>User_Name</h3></td>
+                <td><input type="text" name="name" placeholder="Enter User_Name" value="{{results[1]}}"></td>
+            </tr>
+            <tr>
+                <td><h3>Email_id</h3></td>
+                <td><input type="text" name="email" placeholder="Enter Email_id" value="{{results[2]}}" ></td>
+            </tr>
+            <tr>
+                <td><h3>User_Address</h3></td>
+                <td><input type="text" name="address" placeholder="Enter User_Address" value="{{results[3]}}"></td>
+            </tr>
+            <tr>
+                <td><h3>Telephone</h3></td>
+                <td><input type="text" name="phone" placeholder="Enter User_Address" value="{{results[4]}}"></td>
+            </tr>
+            <tr colspan="2">
+                <td colspan="2" align="center"><input type="submit" name="submit_button" value="submit_form"></td>
+            </tr>
+                <!-- <tr colspan="2">
+                <td colspan="2" align="center"><button type="button" name="submit" class="btn btn-success" value="update">Submit</button></td>
+            </tr> -->
+        </tbody>
+    </table>
+</form>
+</body>
+</html>

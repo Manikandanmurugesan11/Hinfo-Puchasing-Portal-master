@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create_purchaser</title>
+
+</head>
+<body background="\static\users.png">
+<form style="width:450px; margin-left:40%;margin-top:3%; background-color: rgba(245, 245, 245, 0.9);" action="{{ url_for('create_purchaser')}}"  method="post">
+
+        <br/><center><div style="text-align:center" class=""WelcomeMessage>
+
+            <h1>Purchaser detail Portal</h1></div>
+
+        <h1>Register for New Purchaser</h1>
+        
+        <div>
+        <!-- <h3>Enter Rfid id</h3>
+         <input type="text" name="rfid" placeholder="Enter Rfid id"> -->
+            <h3>Enter User name</h3>
+         <input type="text" name="name" placeholder="Enter User name" >
+        <h3>Enter Email id</h3>
+         <input type="text" name="email" placeholder ="Enter email id">
+         <h3>Enter User address</h3>
+         <input type="text" name="address" placeholder="Enter User address">
+         <h3>Enter Telephone No</h3>
+         <input type="text" name="phone" placeholder="Enter Telephone">
+         <br> <br> 
+        </div>
+        
+    </div>
+    
+    <br><input type='submit' value='Save Details'><br>
+        </div>
+        <br> <br> 
+    </center>
+    </form>
+</body>
+</html>

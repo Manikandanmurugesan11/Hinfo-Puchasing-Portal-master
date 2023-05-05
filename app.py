@@ -1,19 +1,21 @@
-from flask import Flask, redirect, url_for, request,render_template,session
+from flask import Flask, redirect, url_for, request,render_template,session, flash
 app = Flask(__name__)
 import smtplib
-import sqlite3
+import sqlite3 
 import binascii
 # from Crypto.Cipher import AES
 
 sqlite_file='DATABASE.sqlite'
 global globalFID
 app.secret_key = 'thisisdatabase'
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'your secret key'
 
 import snowflake.connector
-PASSWORD = 'Sethu@4427'
+PASSWORD = 'Hinfotech@123'
 WAREHOUSE = 'COMPUTE_WH'
-USER ='SETHURAMAN'
-ACCOUNT ='jm53657.ap-southeast-1'
+USER ='HINFOTECH'
+ACCOUNT ='xo63848.ap-south-1'
 DATABASE ='IOT'
 SCHEMA ='IOT'
 
@@ -27,7 +29,10 @@ conns = snowflake.connector.connect(
                 )
 curs=conns.cursor()
 
-
+def get_db_connection():
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
 def encrypt(s):
     s =s 
@@ -46,31 +51,36 @@ def decryption(s):
     # ux=u1.strip(',')
     return s
 
-
-@app.route('/')
-@app.route('/<name>')
+@app.route('/')           
+@app.route('/<name>',methods=['GET','POST'])
 def index(name=None):
     return render_template('HomePage.html',session=session,text=name)
 
-@app.route('/purchaser')
+@app.route('/purchaser',methods=['GET','POST'])
 def purchaser(name=None):
     return render_template('purchaser_login.html',session=session,text=name)
 
 
-@app.route('/success/<name>')
+@app.route('/success/<name>',methods=['GET','POST'])
 def success(name):
     return name
 
-@app.route('/signuppage')
+@app.route('/signuppage',methods=['GET','POST'])
 def signuppage():
    return render_template('SignUp.html')
 
-@app.route('/forgotpassword')
+@app.route('/forgotpassword',methods=['GET','POST'])
 @app.route('/forgotpassword/<name>')
 def forgotpassword(name=None):
    return render_template('Forgot.html',text=name)
 
 @app.route('/rfid_login',methods=['GET','POST'])
+    
+def flask():
+    conn = get_db_connection()
+    posts = conn.execute('SELECT * FROM user').fetchall()
+    conn.close()
+    return render_template('index.html')
 
 def rfid_login():
     if request.method == 'GET':
@@ -96,7 +106,103 @@ def product_details():
         results = curs.fetchall()
         mytuple = sorted(results)
         print(results)
-        return render_template('product_details.html',rows=mytuple)
+        return render_template('product_details.html',rows=mytuple,)
+
+@app.route('/customer_details',methods = ['POST', 'GET'])
+def customer_details():
+        query = ("select * from customer")
+        curs = conns.cursor().execute(query)
+        query_id = curs.sfqid
+        curs.get_results_from_sfqid(query_id)
+        results = curs.fetchall()
+        return render_template('customer_details.html',rows=results,)
+
+@app.route("/create_purchaser",methods=['GET','POST'])
+def create_purchaser():
+    if request.method=='POST':
+        name=request.form['name']
+        email=request.form['email']
+        address=request.form['address']
+        phone=request.form['phone']
+        conn = sqlite3.connect(sqlite_file)
+        curs=conns.cursor()
+        sql="INSERT INTO customer(User_Name,Email_id,User_Address,Telephone) values (%s,%s,%s,%s)"
+        value = (name,email,address,phone)
+        curs = conns.cursor().execute(sql,value)
+        conns.commit()
+        flash('customer added successfully','success')
+        return redirect(url_for("customer_details"))
+    return render_template("create_purchaser.html")
+
+
+@app.route("/reset_password", methods=["GET","POST"])
+def reset_password(name=None):
+    return render_template("reset_password.html",session=session,text=name)
+
+@app.route('/resetpass',methods = ['POST', 'GET'])
+def resetpass():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['new_password']
+        passcon = request.form['new_pass_confirm']
+        action = request.form.get('action', '')
+        print("----------test1start----------")
+        print(request.form.get)
+        print("----------test1end----------")
+        if email is None:
+            message = "Invalid/Unknown user_id."
+            return render_template("reset_password.html",name=message)
+            
+        elif password != passcon:
+            message = "Password mismatch"
+            return render_template("reset_password.html",name=message)
+            
+        else:
+            sql = ("update users1 set password = '%s' WHERE EMAIL_ID = '%s'" %(password,email))
+            curs=conns.cursor()
+            curs = conns.cursor().execute(sql)
+            message = "Password Reset successfully!" 
+            return redirect(url_for("reset_password"))
+    return render_template("reset_password.html",name=message)
+
+
+  
+@app.route('/edit_purchaser/<string:id>',methods = ['POST','GET'])  
+def edit_purchaser(id):
+    if request.method=='POST':
+        name=request.form['name']
+        email=request.form['email']
+        address=request.form['address']
+        phone=request.form['phone']
+        conn = sqlite3.connect(sqlite_file)
+        curs=conns.cursor()
+        task = "update customer set User_Name = %s, Email_id = %s,User_Address = %s,Telephone = %s WHERE Rfid_Id = %s"
+        value = (name,email,address,phone,id)
+        curs = conns.cursor().execute(task,value)
+        conn.commit()
+        flash('customer updated successfully','success')
+        return redirect (url_for('customer_details'))
+    
+    if request.method=='GET':
+        conn = sqlite3.connect(sqlite_file)
+        curs=conns.cursor()
+        sql="select * from customer where Rfid_Id= %s"
+        curs = conns.cursor().execute(sql,[id])
+        results = curs.fetchone()
+        return render_template("edit_purchaser.html", results = results)
+
+
+@app.route('/delete_purchaser/<string:id>',methods = ['POST', 'GET'])  
+def delete_purchaser(id):
+    conn = sqlite3.connect(sqlite_file)
+    c = conn.cursor()
+    curs=conns.cursor()
+    sql="delete from customer where Rfid_Id=%s"
+    curs = conns.cursor().execute(sql,[id])
+    conn.close()
+    flash('customer deleted successfully','success')
+    return redirect(url_for("customer_details"))
+
 
 @app.route('/purchaser_details',methods = ['POST', 'GET'])
 def purchaser_login():
@@ -171,13 +277,27 @@ def login():
     else:
         error = "Username/Password is incorrect!"
         return redirect(url_for('index', name=error))
-
+    
+    if results:
+        query = ("select * from customer")
+        curs = conns.cursor().execute(query)
+        query_id = curs.sfqid
+        curs.get_results_from_sfqid(query_id)
+        results = curs.fetchall()
+        mytuple = sorted(results)
+        print(results)
+        # return render_template('product_details.html',rows=mytuple)
+        return render_template('index.html',rows=mytuple)
+    else:
+        error = "Username/Password is incorrect!"
+        return redirect(url_for('index', name=error))
+    
 # @app.route('/forgothandling',methods = ['POST', 'GET'])
 # def forgothandling():
 #     email = request.form['Email']
 #     action = request.form.get('action', '')
 
-#     if not email or not action:
+#     if not email or not action:``
 #         error = "Any of the fields cannot be left blank"
 #         return redirect(url_for('forgotpassword', name=error))
 
@@ -263,6 +383,7 @@ def clearsession():
     # Redirect the user to the main page
     return redirect(url_for('index'))
 
+
 @app.route('/signup', methods=['GET', 'POST'])
 
 def signup():
@@ -297,7 +418,7 @@ def signup():
         query_id = curs.sfqid
         curs.get_results_from_sfqid(query_id)
         results = curs.fetchall()
-
+ 
         if results:
             msg = "User already exists"
         else:
@@ -324,4 +445,5 @@ def signup():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.secret._key='hinfo@123'
+    app.run(use_reloader=True)

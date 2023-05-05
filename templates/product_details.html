@@ -4,6 +4,18 @@
     <link rel="icon" href="static/favicon.ico" type='image/x-icon'/>
     <title>Grades</title>
   <!---  <img src="\static\page_header_spark_3.jpg"  width="1350" height="228"> -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script>
+    $(document).ready(function(){
+      $("#search").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#Table tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    });
+    </script>
 <style>
 
 h1, h2          { font-family: 'Georgia', serif; margin: 0; }
@@ -23,7 +35,6 @@ th,td {
 }
 
 tr:nth-child(even){background-color: #f2f2f2}
-
 </style>
 </head>
 <body background="\static\storee.jpg">
@@ -31,11 +42,9 @@ tr:nth-child(even){background-color: #f2f2f2}
         <br/><center><div style="text-align:right" class=""WelcomeMessage>
             <h2><a href="{{ url_for('clearsession') }}"> Log out </a></div></h2>
         <br/>
-
-
-
+        
 <!--<a href="{{ url_for('clearsession') }}"> Log out </a> -->
-<div >
+<div >   
 <br>
      <br/><center><div style="text-align:left" class=""WelcomeMessage>
 
@@ -48,22 +57,25 @@ tr:nth-child(even){background-color: #f2f2f2}
 </h1>
         <br/></div>
 </div>
-
+<input id="search" type="text" placeholder="Search..">
 <div>
         <table border = 1 >
          <thead bgcolor="#00FF00">
+            <td>ID</td>
             <td>Product Name</td>
-            <td>Available qty</td>
+            <td>Available_qty</td>
             <td>Price</td>
          </thead>
-
-         {% for r in rows %}
+         <!-- {% for r in rows %} -->
+         <tbody id="Table">
             <tr bgcolor="#000">
+               <td bgcolor="#FFFFFF">{{r[0]}}</td>
                <td bgcolor="#FFFFFF">{{r[1]}}</td>
                <td bgcolor="#FFFFFF">{{r[2]}}</td>
                <td bgcolor="#FFFFFF">{{r[3]}}</td>
             </tr>
-         {% endfor %}
+        </tbody>
+         <!-- {% endfor %} -->
       </table>
 </div>
 </body>

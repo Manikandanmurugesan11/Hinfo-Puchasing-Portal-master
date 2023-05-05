@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>customer_details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <style>
+        .container{
+            background: rgb(121, 140, 177,0.5);
+            font-size: 20px;
+        }
+        h1{
+            margin-top: -10%;
+        }
+        .details{
+            left: 10px;
+            right: 10px; 
+            width: 100%; 
+            transform: translate(0%,40%);
+            text-align: center;
+            display: grid;   
+        }
+    </style>
+</head>
+<body class="container">
+    <div class='container pt-3'>
+        {% with messages=get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category,message in messages %}
+              <div class='alert alert-{{category}}'>{{message}}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        {% block body %}
+        
+        {% endblock %}
+      </div>
+    <br/><center><div style="text-align:right" class=""WelcomeMessage>
+        <h3><a href="{{ url_for('clearsession') }}"> Log out </a></h3>
+        <h3><i class="fa fa-address-book" aria-hidden="true"></i> <a href="{{ url_for('create_purchaser')}}"> Create new customer </a></h3>
+    </div>
+    <br/>
+    
+    <h1 style="text-align: center;">Customer details</h1><i class="fa-duotone fa-file-user"></i>
+
+    <div class="details">
+        <table border ="1" cellspacing="0" cellpadding="10">
+         <thead bgcolor="#E1E1D9">
+            <tr>
+                <th>Rfid_Id</th>
+                <th>User_Name</th>
+                <th>Email_id</th>
+                <th>User_Address</th>
+                <th>Telephone</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>   
+         </thead>
+        {% for r in rows %}
+         <tbody bgcolor="#F5F5ED">
+            <tr>
+               <td>{{r[0]}}</td>
+               <td>{{r[1]}}</td>
+               <td>{{r[2]}}</td>
+               <td>{{r[3]}}</td>
+               <td>{{r[4]}}</td>
+               <td><a href="{{url_for('edit_purchaser',id=r[0])}}" class="btn btn-success btn-delete btn-sm">Edit</a></td>
+               <td><a onclick="return confirm('Are you sure to delete?');" href="{{url_for('delete_purchaser',id=r[0])}}" class="btn btn-danger btn-delete btn-sm">Delete</a></td>
+            </tr>
+        </tbody>
+        {% endfor %}
+      </table>
+</div>
+    
+</body>
+</html>
